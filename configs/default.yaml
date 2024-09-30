@@ -1,0 +1,98 @@
+task: waymo_train
+source_path: /path/to/dataset
+exp_name: /path/to/output
+resolution: 1
+resume: True
+gpus: [0]
+multi_view_num : 2
+multi_view_max_angle : 15 
+
+data:
+  split_test: -1
+  split_train: 1
+  type: Waymo
+  white_background: false
+  selected_frames: [0, 196]
+  cameras: [0, 1, 2]
+  extent: 10
+  use_colmap: true
+  filter_colmap: true
+
+model:
+  gaussian:
+    sh_degree: 1
+    fourier_dim: 5
+    fourier_scale: 1.
+    flip_prob: 0.5
+  nsg:
+    include_bkgd: true
+    include_obj: true
+    include_sky: true
+    opt_track: true
+    ncc_scale: 1.0
+    preload_img: false
+
+train:
+  iterations: 50000
+  test_iterations: [10000,20000,30000,40000,50000]
+  save_iterations: [10000,20000,30000,40000,50000]
+  checkpoint_iterations: [10000,20000,30000,40000,50000]
+  
+optim:
+  prune_box_interval: 100
+  densification_interval: 100
+  densify_from_iter: 500
+  densify_grad_threshold_bkgd: 0.0006
+  densify_grad_abs_bkgd: True
+  densify_grad_threshold_obj: 0.0002
+  densify_grad_abs_obj: False
+  densify_grad_threshold: 0.0002
+  densify_until_iter: 25000
+  feature_lr: 0.0025
+  max_screen_size: 20
+  min_opacity: 0.005
+  opacity_lr: 0.05
+  opacity_reset_interval: 3000
+  percent_big_ws: 0.1
+  percent_dense: 0.01
+  position_lr_delay_mult: 0.01
+  position_lr_final: 1.6e-06
+  position_lr_init: 0.00016
+  position_lr_max_steps: 50000
+  rotation_lr: 0.001
+  scaling_lr: 0.005
+  semantic_lr: 0.01
+  sci_lr: 0.0003
+
+  lambda_dssim: 0.2
+  lambda_sky: 0.05
+  lambda_sky_scale: [1, 1, 0]
+  lambda_mask: 0.1
+  lambda_reg: 0.1
+  lambda_sci: 0.1
+  lambda_depth_lidar: 0.1
+
+  track_position_lr_delay_mult: 0.01
+  track_position_lr_init: 0.005
+  track_position_lr_final: 5.0e-5
+  track_position_max_steps: 30000
+
+  track_rotation_lr_delay_mult: 0.01
+  track_rotation_lr_init: 0.001
+  track_rotation_lr_final: 1.0e-5
+  track_rotation_max_steps: 30000
+
+  multi_view_weight_from_iter: 7000
+  use_virtul_cam: False
+  virtul_cam_prob: 0.5
+  use_multi_view_trim: True
+  multi_view_ncc_weight: 0.15
+  multi_view_geo_weight: 0.03
+  multi_view_patch_size: 3
+  multi_view_sample_num: 102400
+  multi_view_pixel_noise_th: 1.0
+
+render:
+  fps: 24
+  concat_cameras: [1, 0, 2]
+  render_normal : True
